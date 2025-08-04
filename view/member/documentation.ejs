@@ -1,0 +1,255 @@
+<%- include('./partials/header') %>
+
+<style>
+    .code-block {
+        background-color: #282c34;
+        color: #abb2bf;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+    .accordion-button:not(.collapsed) {
+        background-color: var(--bs-tertiary-bg);
+        color: var(--bs-body-color);
+        box-shadow: none;
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0,0,0,.125);
+    }
+    .badge {
+        font-size: 0.9em;
+        padding: 0.4em 0.7em;
+    }
+    .endpoint {
+        font-family: 'Courier New', Courier, monospace;
+        background-color: var(--bs-tertiary-bg);
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.3rem;
+        font-weight: 600;
+        color: var(--bs-emphasis-color);
+    }
+    .param-table {
+        font-size: 0.9rem;
+        width: 100%;
+    }
+    .param-table td, .param-table th {
+        padding: 0.6rem;
+        border: 1px solid var(--bs-border-color);
+        vertical-align: middle;
+    }
+    .param-table th {
+        background-color: var(--bs-tertiary-bg);
+    }
+    .param-name {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+    }
+    .text-required {
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dokumentasi API Publik</h1>
+</div>
+<p class="text-muted small">Gunakan endpoint di bawah ini untuk membuat dan memvalidasi pembayaran secara terprogram dari sistem Anda.</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Otentikasi</h5>
+        <p class="small">Semua permintaan API yang memerlukan otentikasi (metode POST) harus menyertakan <strong>API Key</strong> Anda di dalam <i>body request</i> dengan nama parameter <code class="param-name">apikey</code>. Anda dapat menemukan API Key Anda di halaman Profil.</p>
+        <p class="small text-muted mb-0">Base URL untuk semua endpoint adalah: <strong><%= baseUrl %></strong></p>
+    </div>
+</div>
+
+<div class="accordion" id="apiDocs">
+    <div class="accordion-item card">
+        <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCreate">
+                <strong>Membuat Transaksi Baru</strong>
+            </button>
+        </h2>
+        <div id="collapseCreate" class="accordion-collapse collapse show" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p class="small">Endpoint ini digunakan untuk membuat instruksi pembayaran baru. Masa aktif setiap transaksi adalah 15 menit, setelah itu status akan otomatis menjadi `gagal`.</p>
+                
+                <hr class="my-4">
+                <h6 class="fw-bold">1. Membuat Transaksi QRIS</h6>
+                <p><span class="badge bg-primary">POST</span> <span class="endpoint">/payment/qris</span></p>
+                <p class="small">Menghasilkan QRIS dinamis berdasarkan nominal yang dikirim.</p>
+                <h6 class="small fw-bold mt-3">Parameter Body:</h6>
+                <div class="table-responsive">
+                    <table class="param-table">
+                        <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="param-name">action</span></td><td>String</td><td>Harus bernilai <code>"create"</code>. <span class="text-required">*</span></td></tr>
+                            <tr><td><span class="param-name">apikey</span></td><td>String</td><td>API Key Anda. <span class="text-required">*</span></td></tr>
+                            <tr><td><span class="param-name">amount</span></td><td>Number</td><td>Jumlah pembayaran dasar (sebelum biaya admin). <span class="text-required">*</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h6 class="small fw-bold mt-4">Contoh Body Request:</h6>
+                <pre class="code-block"><code>{
+    "action": "create",
+    "apikey": "abcdef1234567890abcdef1234567890abcdef123456",
+    "amount": 50000
+}</code></pre>
+                <h6 class="small fw-bold mt-4">Contoh Respons Sukses (200 OK):</h6>
+                <pre class="code-block"><code>{
+    "success": true,
+    "message": "QRIS berhasil dibuat",
+    "data": {
+        "transactionId": "TRX-1753789...",
+        "paymentUrl": "<%= baseUrl %>/payment/abcdef123...",
+        "amount": 50123,
+        "paymentMethod": "qris",
+        "qr_base64": "iVBORw0KGgo...",
+        "qr_url": "https://cdn.wbk.web.id/qris-1753789....png",
+        "expiredAt": "2025-08-03T10:45:00.123Z"
+    }
+}</code></pre>
+
+                <hr class="my-4">
+                <h6 class="fw-bold">2. Membuat Transaksi E-Wallet / Bank</h6>
+                <p><span class="badge bg-primary">POST</span> <span class="endpoint">/payment/ewallet</span></p>
+                <p><span class="badge bg-primary">POST</span> <span class="endpoint">/payment/bank</span></p>
+                <p class="small">Memberikan detail rekening tujuan untuk pembayaran.</p>
+                <h6 class="small fw-bold mt-3">Parameter Body:</h6>
+                <div class="table-responsive">
+                    <table class="param-table">
+                         <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+                         <tbody>
+                            <tr><td><span class="param-name">action</span></td><td>String</td><td>Harus bernilai <code>"create"</code>. <span class="text-required">*</span></td></tr>
+                            <tr><td><span class="param-name">apikey</span></td><td>String</td><td>API Key Anda. <span class="text-required">*</span></td></tr>
+                            <tr><td><span class="param-name">amount</span></td><td>Number</td><td>Jumlah pembayaran dasar (sebelum biaya admin). <span class="text-required">*</span></td></tr>
+                            <tr><td><span class="param-name">paymentMethod</span></td><td>String</td><td>ID unik dari metode pembayaran (Bank atau E-Wallet) yang sudah Anda daftarkan di halaman Pembayaran. <span class="text-required">*</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h6 class="small fw-bold mt-4">Contoh Body Request:</h6>
+                <pre class="code-block"><code>{
+    "action": "create",
+    "apikey": "abcdef1234567890abcdef1234567890abcdef123456",
+    "amount": 10000,
+    "paymentMethod": "gopay"
+}</code></pre>
+                <h6 class="small fw-bold mt-4">Contoh Respons Sukses (200 OK):</h6>
+                <pre class="code-block"><code>{
+    "success": true,
+    "message": "Instruksi pembayaran berhasil dibuat",
+    "data": {
+        "transactionId": "TRX-1753790...",
+        "paymentUrl": "<%= baseUrl %>/payment/abcdef456...",
+        "amount": 10123,
+        "paymentMethod": "gopay",
+        "accountNumber": "081234567890",
+        "ownerName": "Budi Santoso",
+        "expiredAt": "2025-08-03T10:50:00.456Z"
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <div class="accordion-item card mt-3">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStatus">
+                <strong>Mengecek Status Transaksi</strong>
+            </button>
+        </h2>
+        <div id="collapseStatus" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p class="small">Gunakan endpoint ini untuk mengecek status sebuah transaksi menggunakan ID Transaksi. Tidak memerlukan otentikasi API Key.</p>
+                <p><span class="badge bg-success">GET</span> <span class="endpoint">/payment/qris/status/:transactionId</span></p>
+                <p><span class="badge bg-success">GET</span> <span class="endpoint">/payment/ewallet/status/:transactionId</span></p>
+                <p><span class="badge bg-success">GET</span> <span class="endpoint">/payment/bank/status/:transactionId</span></p>
+                <h6 class="small fw-bold mt-3">Parameter URL:</h6>
+                <div class="table-responsive">
+                    <table class="param-table">
+                         <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+                         <tbody>
+                            <tr><td><span class="param-name">:transactionId</span></td><td>String</td><td>ID Transaksi yang didapat saat membuat transaksi. <span class="text-required">*</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h6 class="small fw-bold mt-4">Contoh Respons Sukses (200 OK):</h6>
+                 <pre class="code-block"><code>{
+    "success": true,
+    "message": "Detail transaksi ditemukan",
+    "data": {
+        "transactionId": "TRX-1753790...",
+        "status": "pending",
+        "amount": 10123,
+        "method": "gopay"
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item card mt-3">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseList">
+                <strong>Mendapatkan Daftar Metode Pembayaran</strong>
+            </button>
+        </h2>
+        <div id="collapseList" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p class="small">Endpoint ini untuk mengambil daftar semua metode pembayaran (QRIS, E-Wallet, Bank) yang telah Anda aktifkan.</p>
+                <p><span class="badge bg-primary">POST</span> <span class="endpoint">/payment/list</span></p>
+                <h6 class="small fw-bold mt-3">Parameter Body:</h6>
+                <div class="table-responsive">
+                    <table class="param-table">
+                        <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="param-name">apikey</span></td><td>String</td><td>API Key Anda. <span class="text-required">*</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h6 class="small fw-bold mt-4">Contoh Body Request:</h6>
+                <pre class="code-block"><code>{
+    "apikey": "abcdef1234567890abcdef1234567890abcdef123456"
+}</code></pre>
+                <h6 class="small fw-bold mt-4">Contoh Respons Sukses (200 OK):</h6>
+                 <pre class="code-block"><code>{
+    "success": true,
+    "message": "Berhasil menampilkan list ID Payment.",
+    "data": {
+        "QRIS": [
+            {
+                "id": "qris",
+                "name": "QRIS Dinamis",
+                "minAmount": 1000,
+                "maxAmount": 10000000,
+                "fee": 0.7,
+                "feeType": "Persen",
+                "qrisName": "TOKO ABC",
+                "qrisUrl": "https://cdn.domain.com/qris.jpg",
+                "qrisString": "000201010212265..."
+            }
+        ],
+        "Ewallet": [
+            {
+                "id": "gopay",
+                "name": "GOPAY",
+                "minAmount": 10000,
+                "maxAmount": 2000000,
+                "fee": 1000,
+                "feeType": "Fixed",
+                "accountNumber": "081234567890",
+                "accountName": "Budi Santoso"
+            }
+        ]
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

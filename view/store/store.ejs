@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ece9e6 0%, #ffffff 100%);
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .store-card {
+            max-width: 480px;
+            border: none;
+            border-radius: 1rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        }
+        .logo { max-height: 45px; }
+        .payment-method {
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s ease-in-out;
+            border-radius: 0.75rem;
+        }
+        .payment-method:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #5850ec;
+        }
+        .payment-method.active {
+            border-color: #5850ec;
+            box-shadow: 0 0 0 3px rgba(88, 80, 236, 0.25);
+            background-color: #f0f2ff;
+        }
+        .payment-method img {
+            max-width: 70px;
+            max-height: 28px;
+            object-fit: contain;
+        }
+        .fee-info {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .form-control-lg {
+            border-radius: 0.75rem;
+        }
+        .btn-primary {
+            background-color: #5850ec;
+            border-color: #5850ec;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #4a42d9;
+            border-color: #4a42d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100 py-4">
+        <div class="card store-card w-100">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <% if (merchant.store && merchant.store.logoUrl) { %>
+                        <img src="<%= merchant.store.logoUrl %>" alt="<%= merchant.store.name %> Logo" class="logo mb-2">
+                    <% } %>
+                    <h4 class="mb-1"><%= merchant.store.name || merchant.username %></h4>
+                    <p class="text-muted small">Laman Pembayaran Aman</p>
+                </div>
+                
+                <% if (typeof error_messages !== 'undefined' && error_messages.length > 0) { %>
+                    <div class="alert alert-danger small"><%= error_messages[0] %></div>
+                <% } %>
+
+                <% if (Object.keys(groupedMethods).length > 0) { %>
+                    <form id="payment-form" action="/store/<%= merchant.username %>/pay" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                        <input type="hidden" name="paymentMethodId" id="paymentMethodId">
+
+                        <div class="mb-4">
+                            <label for="amount" class="form-label fw-bold">Jumlah Pembayaran</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">IDR</span>
+                                <input type="number" class="form-control form-control-lg border-start-0" id="amount" name="amount" placeholder="10.000" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Pilih Metode Pembayaran</label>
+                            <% Object.keys(groupedMethods).forEach(category => { %>
+                                <div class="mb-3">
+                                    <h6 class="small text-muted mb-2"><%= category %></h6>
+                                    <div class="vstack gap-2">
+                                        <% groupedMethods[category].forEach(method => { %>
+                                            <div class="d-flex align-items-center p-3 payment-method" 
+                                                 data-id="<%= method.id %>"
+                                                 data-fee="<%= method.fee %>"
+                                                 data-fee-type="<%= method.feeType %>"
+                                                 data-category="<%= method.category %>">
+                                                <img src="<%= method.iconUrl %>" alt="<%= method.name %>">
+                                                <div class="ms-3 flex-grow-1">
+                                                    <div class="fw-bold"><%= method.name %></div>
+                                                    <div class="fee-info">
+                                                        <% if (method.fee > 0) { %>
+                                                            Biaya: <%= method.feeType === 'Fixed' ? `Rp ${method.fee.toLocaleString('id-ID')}` : `${method.fee}%` %>
+                                                        <% } else { %>
+                                                            Tanpa Biaya Admin
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <i class="bi bi-check-circle-fill fs-4 text-primary d-none"></i>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
+                            <span class="fw-bold">Total Bayar</span>
+                            <strong id="total-amount" class="fs-5">Rp 0</strong>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submit-button" disabled>
+                                <i class="bi bi-shield-check-fill me-2"></i>Lanjutkan Pembayaran
+                            </button>
+                        </div>
+                    </form>
+                <% } else { %>
+                    <div class="text-center p-4">
+                        <i class="bi bi-credit-card-2-off fs-1 text-muted"></i>
+                        <h5 class="mt-3">Pembayaran Belum Tersedia</h5>
+                        <p class="text-muted">Saat ini, toko ini belum mengaktifkan metode pembayaran apapun.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('payment-form');
+            if (!form) return;
+
+            const amountInput = document.getElementById('amount');
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const totalAmountEl = document.getElementById('total-amount');
+            const paymentMethodIdInput = document.getElementById('paymentMethodId');
+            const submitButton = document.getElementById('submit-button');
+            let selectedMethod = null;
+
+            function calculateTotal() {
+                const baseAmount = parseInt(amountInput.value) || 0;
+                let finalAmount = baseAmount;
+                
+                if (selectedMethod && baseAmount > 0) {
+                    const fee = parseFloat(selectedMethod.dataset.fee);
+                    const feeType = selectedMethod.dataset.feeType;
+                    const category = selectedMethod.dataset.category;
+                    let feeAmount = 0;
+                    if (feeType === 'Persen') {
+                        feeAmount = Math.round(baseAmount * (fee / 100));
+                    } else {
+                        feeAmount = fee;
+                    }
+                    finalAmount += feeAmount;
+                    if (category !== 'QRIS') {
+                        totalAmountEl.innerHTML = `~ ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(finalAmount)} <small class="text-muted fw-normal">(+ fee)</small>`;
+                    } else {
+                        totalAmountEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(finalAmount);
+                    }
+                } else {
+                    totalAmountEl.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(finalAmount);
+                }
+                
+                submitButton.disabled = !(baseAmount > 0 && selectedMethod);
+            }
+
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    paymentMethods.forEach(m => {
+                        m.classList.remove('active');
+                        m.querySelector('.bi-check-circle-fill').classList.add('d-none');
+                    });
+                    method.classList.add('active');
+                    method.querySelector('.bi-check-circle-fill').classList.remove('d-none');
+                    selectedMethod = method;
+                    paymentMethodIdInput.value = method.dataset.id;
+                    calculateTotal();
+                });
+            });
+
+            amountInput.addEventListener('input', calculateTotal);
+        });
+    </script>
+</body>
+</html>

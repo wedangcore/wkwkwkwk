@@ -1,0 +1,597 @@
+<%- include('./partials/header') %>
+
+<% if (success_messages.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><%= success_messages[0] %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+<% if (error_messages.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><%= error_messages[0] %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <h1 class="h2">Manajemen Pembayaran</h1>
+</div>
+
+<div class="mb-3">
+    <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center fw-semibold p-3" type="button" data-bs-toggle="collapse" data-bs-target="#addBankEwalletCollapse">
+        <span><i class="bi bi-bank me-2"></i>Tambah Metode Bank / E-Wallet</span>
+         <i class="bi bi-chevron-down"></i>
+    </button>
+    <div class="collapse" id="addBankEwalletCollapse">
+        <div class="card card-body mt-2">
+            <form action="/member/payment/add" method="POST">
+                <input type="hidden" name="formType" value="bank_ewallet">
+                <input type="hidden" name="_csrf" id="csrf-token-bank" value="<%= csrfToken %>">
+                <div class="mb-3">
+                     <label for="add-category" class="form-label">Kategori <span class="text-danger">*</span></label>
+                    <select class="form-select" id="add-category" name="category" required>
+                        <option value="Bank" selected>Bank</option>
+                        <option value="Ewallet">E-Wallet</option>
+                     </select>
+                </div>
+                <div id="bank-fields">
+                    <div class="mb-3"><label for="add-id-bank" class="form-label">ID unik (Bank) <span class="text-danger">*</span></label><select class="form-select" id="add-id-bank" required></select></div>
+                    <div class="mb-3"><label for="add-name-bank" class="form-label">Nama Tampilan <span class="text-danger">*</span></label><input type="text" class="form-control" id="add-name-bank" readonly></div>
+                </div>
+                <div id="ewallet-fields" class="d-none">
+                     <div class="mb-3">
+                        <label for="add-id-ewallet-manual" class="form-label">ID Unik (E-Wallet) <span class="text-danger">*</span></label>
+                         <div class="input-group">
+                            <select class="form-select" id="add-id-ewallet-select">
+                                <option value="" selected>Pilih untuk cek otomatis...</option>
+                                 <option value="dana">DANA</option><option value="ovo">OVO</option><option value="gopay">GOPAY</option><option value="shopeepay">SHOPEEPAY</option><option value="linkaja">LINKAJA</option>
+                            </select>
+                            <input type="text" class="form-control" id="add-id-ewallet-manual" placeholder="Atau isi manual">
+                         </div>
+                    </div>
+                     <div class="mb-3"><label for="add-name-ewallet" class="form-label">Nama Tampilan <span class="text-danger">*</span></label><input type="text" class="form-control" id="add-name-ewallet"></div>
+                </div>
+                
+                <input type="hidden" id="common-id-input" name="id">
+                <input type="hidden" id="common-name-input" name="name">
+
+                <div class="mb-3">
+                    <label for="add-accountNumber" class="form-label">Nomor Rekening/HP <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                         <input type="text" class="form-control" id="add-accountNumber" name="accountNumber" required>
+                         <span class="input-group-text d-none" id="owner-check-spinner"><div class="spinner-border spinner-border-sm" role="status"></div></span>
+                    </div>
+                </div>
+                 <div class="mb-3"><label for="add-accountName" class="form-label">Nama Pemilik <span class="text-danger">*</span></label><input type="text" class="form-control" id="add-accountName" name="accountName" required></div>
+                <div class="row g-3 mb-3">
+                     <div class="col-md-6"><label for="add-minAmount-bank" class="form-label">Minimal Transfer</label><input type="number" class="form-control" id="add-minAmount-bank" name="minAmount" placeholder="0"></div>
+                    <div class="col-md-6"><label for="add-maxAmount-bank" class="form-label">Maksimal Transfer</label><input type="number" class="form-control" id="add-maxAmount-bank" name="maxAmount" placeholder="0"></div>
+                 </div>
+                <div class="row g-3 mb-3">
+                     <div class="col-md-6"><label for="add-fee-bank" class="form-label">Biaya Admin</label><input type="number" step="any" class="form-control" id="add-fee-bank" name="fee" placeholder="0"></div>
+                    <div class="col-md-6"><label for="add-feeType-bank" class="form-label">Tipe Biaya</label><select class="form-select" id="add-feeType-bank" name="feeType"><option value="Fixed">Fixed (Rp)</option><option value="Persen">Persen (%)</option></select></div>
+                 </div>
+                <div class="mb-3"><label for="add-iconUrl-bank" class="form-label">URL Ikon</label><input type="url" class="form-control" id="add-iconUrl-bank" name="iconUrl" placeholder="https://.../icon.png"></div>
+                 <div class="mb-3"><label for="add-notificationTemplates-bank" class="form-label">Template Notifikasi</label><textarea class="form-control" id="add-notificationTemplates-bank" name="notificationTemplates" rows="3"></textarea></div>
+                <div class="text-end"><button type="submit" class="btn btn-primary px-4">Simpan</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="mb-4">
+     <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center fw-semibold p-3" type="button" data-bs-toggle="collapse" data-bs-target="#addQrisCollapse">
+        <span><i class="bi bi-qr-code me-2"></i>Tambah Metode QRIS</span>
+        <i class="bi bi-chevron-down"></i>
+     </button>
+    <div class="collapse" id="addQrisCollapse">
+        <div class="card card-body mt-2">
+            <form action="/member/payment/add" method="POST">
+                <input type="hidden" name="formType" value="qris">
+                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="row g-3 mb-3">
+                     <div class="col-sm-6"><label for="add-id-qris" class="form-label">ID Unik <span class="text-danger">*</span></label><input type="text" class="form-control" id="add-id-qris" name="id" value="qris" required></div>
+                    <div class="col-sm-6"><label for="add-name-qris" class="form-label">Nama Tampilan <span class="text-danger">*</span></label><input type="text" class="form-control" id="add-name-qris" name="name" value="QRIS Orderdata" required></div>
+                 </div>
+                <div class="mb-3"><label for="add-qrisName" class="form-label">Nama QRIS (nama merchant)</label><input type="text" class="form-control" id="add-qrisName" name="qrisName" required></div>
+                <div class="mb-3">
+                    <label for="add-qrisUrl" class="form-label">URL Gambar QRIS <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="url" class="form-control" id="add-qrisUrl" name="qrisUrl" placeholder="https://.../my-qris.jpg" required>
+                        <span class="input-group-text d-none" id="add-qris-spinner"><div class="spinner-border spinner-border-sm" role="status"></div></span>
+                    </div>
+                    <div id="add-qris-feedback" class="form-text"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="add-qrisString" class="form-label">QRIS String</label>
+                    <textarea class="form-control" id="add-qrisString" name="qrisString" rows="4" readonly placeholder="Akan terisi otomatis setelah memasukkan URL Gambar QRIS yang valid..."></textarea>
+                </div>
+                 <div class="row g-3 mb-3">
+                    <div class="col-md-6"><label for="add-minAmount-qris" class="form-label">Minimal Transfer</label><input type="number" class="form-control" id="add-minAmount-qris" name="minAmount" placeholder="0"></div>
+                    <div class="col-md-6"><label for="add-maxAmount-qris" class="form-label">Maksimal Transfer</label><input type="number" class="form-control" id="add-maxAmount-qris" name="maxAmount" placeholder="0"></div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6"><label for="add-fee-qris" class="form-label">Biaya Admin</label><input type="number" step="any" class="form-control" id="add-fee-qris" name="fee" placeholder="0"></div>
+                     <div class="col-md-6"><label for="add-feeType-qris" class="form-label">Tipe Biaya</label><select class="form-select" id="add-feeType-qris" name="feeType"><option value="Fixed">Fixed (Rp)</option><option value="Persen">Persen (%)</option></select></div>
+                </div>
+                <div class="mb-3"><label for="add-iconUrl-qris" class="form-label">URL Ikon</label><input type="url" class="form-control" id="add-iconUrl-qris" name="iconUrl" value="https://upload.wikimedia.org/wikipedia/commons/e/e1/QRIS_logo.svg"></div>
+                <div class="mb-3"><label for="add-notificationTemplates-qris" class="form-label">Template Notifikasi</label><textarea class="form-control" id="add-notificationTemplates-qris" name="notificationTemplates" rows="3"></textarea></div>
+                 <div class="text-end"><button type="submit" class="btn btn-primary px-4">Simpan</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center my-4">
+    <h5 class="mb-0 h6">Daftar Metode Pembayaran Anda</h5>
+    <div class="btn-group btn-group-sm" role="group">
+         <button type="button" class="btn btn-outline-secondary" id="view-grid-btn"><i class="bi bi-grid-fill"></i> Kotak</button>
+        <button type="button" class="btn btn-outline-secondary" id="view-list-btn"><i class="bi bi-list-ul"></i> Baris</button>
+    </div>
+</div>
+
+<div class="row g-4" id="payment-methods-container">
+    <% if (user.paymentMethods && user.paymentMethods.length > 0) { %>
+        <% user.paymentMethods.sort((a, b) => a.name.localeCompare(b.name)).forEach(method => { %>
+            <div class="payment-method-item col-lg-4 col-md-6">
+                <div class="card h-100">
+                     <div class="card-body pb-2">
+                         <div class="d-flex align-items-center mb-2">
+                            <img src="<%= method.iconUrl || (method.category === 'QRIS' ? 'https://upload.wikimedia.org/wikipedia/commons/e/e1/QRIS_logo.svg' : 'https://cdn.wbk.web.id/files/WBK-PayGateway.png') %>" alt="<%= method.name %>" class="rounded-circle me-3 payment-icon">
+                            <div>
+                                <h6 class="card-title mb-0"><%= method.name %></h6>
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis fw-medium"><%= method.category %></span>
+                            </div>
+                        </div>
+                        <ul class="list-unstyled small text-muted mt-3">
+                             <% if (method.category === 'QRIS') { %>
+                                <li><strong>Nama QRIS:</strong> <%= method.qrisName || '-' %></li>
+                                 <li><strong>QRIS URL:</strong> <%= method.qrisUrl ? 'Terisi' : '-' %></li>
+                                <li><strong>QRIS String:</strong> <%= method.qrisString ? 'Terisi' : '-' %></li>
+                            <% } else { %>
+                                <li><strong>No:</strong> <%= method.accountNumber %></li>
+                                <li><strong>Pemilik:</strong> <%= method.accountName %></li>
+                            <% } %>
+                             <li><strong>Min-Max:</strong> <%= new Intl.NumberFormat('id-ID').format(method.minAmount) %> - <%= new Intl.NumberFormat('id-ID').format(method.maxAmount) %></li>
+                            <li><strong>Biaya Admin:</strong> <%= method.feeType === 'Fixed' ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(method.fee) : `${method.fee}%` %></li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-transparent d-flex justify-content-end align-items-center gap-2">
+                         <% if (method.category === 'QRIS') { %>
+                            <button class="btn btn-sm btn-outline-info view-qris-btn" data-bs-toggle="modal" data-bs-target="#viewQrisModal" data-qris-url="<%= method.qrisUrl %>" data-qris-name="<%= method.qrisName || method.name %>">
+                                <i class="bi bi-qr-code-scan"></i> View
+                             </button>
+                        <% } %>
+                        <div class="form-check form-switch" title="Aktifkan/Nonaktifkan">
+                             <form action="/member/payment/update/<%= method._id %>" method="POST" class="d-none" id="toggle-form-<%= method._id %>">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <input type="hidden" name="action" value="toggle">
+                             </form>
+                            <input class="form-check-input" type="checkbox" role="switch" onchange="document.getElementById('toggle-form-<%= method._id %>').submit();" <%= method.isEnabled ? 'checked' : '' %>>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary edit-btn" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editMethodModal"
+                                data-method-id="<%= method._id %>"
+                                data-id="<%= method.id %>"
+                                data-name="<%= method.name %>"
+                                data-category="<%= method.category %>"
+                                data-account-number="<%= method.accountNumber || '' %>"
+                                data-account-name="<%= method.accountName || '' %>"
+                                data-qris-name="<%= method.qrisName || '' %>"
+                                data-qris-string="<%= method.qrisString || '' %>"
+                                data-qris-url="<%= method.qrisUrl || '' %>"
+                                data-min-amount="<%= method.minAmount %>"
+                                data-max-amount="<%= method.maxAmount %>"
+                                data-fee="<%= method.fee %>"
+                                data-fee-type="<%= method.feeType %>"
+                                data-icon-url="<%= method.iconUrl || '' %>"
+                                data-notification-templates="<%= method.notificationTemplates.join('\\n') %>">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                         <form action="/member/payment/update/<%= method._id %>" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus metode <%= method.name %>?');">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="action" value="delete">
+                             <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i> Hapus
+                            </button>
+                         </form>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="col">
+             <div class="text-center p-5 bg-light rounded">
+                 <p class="mb-0">Anda belum menambahkan metode pembayaran.</p>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<div class="modal fade" id="editMethodModal" tabindex="-1" aria-labelledby="editMethodModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <h1 class="modal-title fs-5" id="editMethodModalLabel">Edit Metode Pembayaran</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editMethodForm" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <input type="hidden" name="action" value="update_details">
+                    <input type="hidden" id="edit-category-hidden" name="category">
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6"><label for="edit-id" class="form-label">ID Unik</label><input type="text" class="form-control" id="edit-id" name="id" required></div>
+                         <div class="col-sm-6"><label for="edit-name" class="form-label">Nama Tampilan</label><input type="text" class="form-control" id="edit-name" name="name" required></div>
+                    </div>
+                    <div id="edit-bank-ewallet-fields">
+                        <div class="row g-3 mb-3">
+                             <div class="col-md-6"><label for="edit-accountNumber" class="form-label">Nomor Rekening/HP</label><input type="text" class="form-control" id="edit-accountNumber" name="accountNumber"></div>
+                            <div class="col-md-6"><label for="edit-accountName" class="form-label">Nama Pemilik</label><input type="text" class="form-control" id="edit-accountName" name="accountName"></div>
+                        </div>
+                    </div>
+                     <div id="edit-qris-fields">
+                         <div class="mb-3"><label for="edit-qrisName" class="form-label">Nama QRIS</label><input type="text" class="form-control" id="edit-qrisName" name="qrisName"></div>
+                         <div class="mb-3">
+                            <label for="edit-qrisUrl" class="form-label">URL Gambar QRIS</label>
+                            <div class="input-group">
+                                <input type="url" class="form-control" id="edit-qrisUrl" name="qrisUrl">
+                                <span class="input-group-text d-none" id="edit-qris-spinner"><div class="spinner-border spinner-border-sm" role="status"></div></span>
+                            </div>
+                            <div id="edit-qris-feedback" class="form-text"></div>
+                        </div>
+                         <div class="mb-3">
+                            <label for="edit-qrisString" class="form-label">QRIS String</label>
+                            <textarea class="form-control" id="edit-qrisString" name="qrisString" rows="4" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6"><label for="edit-minAmount" class="form-label">Minimal Transfer</label><input type="number" class="form-control" id="edit-minAmount" name="minAmount"></div>
+                        <div class="col-md-6"><label for="edit-maxAmount" class="form-label">Maksimal Transfer</label><input type="number" class="form-control" id="edit-maxAmount" name="maxAmount"></div>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6"><label for="edit-fee" class="form-label">Biaya Admin</label><input type="number" step="any" class="form-control" id="edit-fee" name="fee"></div>
+                         <div class="col-md-6"><label for="edit-feeType" class="form-label">Tipe Biaya</label><select class="form-select" id="edit-feeType" name="feeType"><option value="Fixed">Fixed (Rp)</option><option value="Persen">Persen (%)</option></select></div>
+                    </div>
+                    <div class="mb-3"><label for="edit-iconUrl" class="form-label">URL Ikon</label><input type="url" class="form-control" id="edit-iconUrl" name="iconUrl"></div>
+                     <div class="mb-3"><label for="edit-notificationTemplates" class="form-label">Template Notifikasi</label><textarea class="form-control" id="edit-notificationTemplates" name="notificationTemplates" rows="3"></textarea></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="viewQrisModal" tabindex="-1" aria-labelledby="viewQrisModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewQrisModalLabel">QR Code</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+         <img id="qris-image-preview" src="" class="img-fluid rounded" alt="QRIS Code" style="max-width: 300px;">
+        <p class="fw-bold mt-3 mb-0" id="qris-name-preview"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%- include('./partials/footer') %>
+
+<style>
+    .payment-icon {
+        width: 40px; height: 40px;
+        object-fit: contain;
+        background-color: var(--bs-tertiary-bg);
+    }
+    #payment-methods-container.view-list .payment-method-item .card {
+        flex-direction: row; align-items: center;
+    }
+    #payment-methods-container.view-list .card-body {
+        flex-grow: 1; }
+    #payment-methods-container.view-list .card-footer {
+        flex-shrink: 0;
+        border-top: 0 !important; border-left: 1px solid var(--bs-border-color);
+    }
+    .is-valid + .form-text { color: var(--bs-success); }
+    .is-invalid + .form-text { color: var(--bs-danger); }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // --- CSRF Token for all AJAX requests ---
+    const csrfToken = '<%= csrfToken %>';
+
+    // --- Bank/E-wallet Form Logic ---
+    const addCategorySelect = document.getElementById('add-category');
+    if (addCategorySelect) {
+        const bankFields = document.getElementById('bank-fields');
+        const ewalletFields = document.getElementById('ewallet-fields');
+        const bankSelect = document.getElementById('add-id-bank');
+        const bankNameInput = document.getElementById('add-name-bank');
+        const ewalletSelect = document.getElementById('add-id-ewallet-select');
+        const ewalletManualInput = document.getElementById('add-id-ewallet-manual');
+        const ewalletNameInput = document.getElementById('add-name-ewallet');
+        const accountNumberInput = document.getElementById('add-accountNumber');
+        const accountNameInput = document.getElementById('add-accountName');
+        const spinner = document.getElementById('owner-check-spinner');
+        const commonIdInput = document.getElementById('common-id-input');
+        const commonNameInput = document.getElementById('common-name-input');
+        let bankList = [];
+
+        async function loadBankList() {
+            try {
+                bankSelect.disabled = true; bankSelect.innerHTML = '<option>Memuat bank...</option>';
+                const response = await fetch('/member/payment/list-bank');
+                const data = await response.json();
+                if (data.success) {
+                    bankList = data.result; bankSelect.innerHTML = '<option value="">Pilih salah satu...</option>';
+                    bankList.forEach(bank => {
+                        const option = new Option(bank.bank_name, bank.bank_code);
+                        bankSelect.add(option);
+                    });
+                } else {
+                    bankSelect.innerHTML = '<option>Gagal memuat</option>';
+                }
+            } catch (error) {
+                console.error('Gagal memuat daftar bank:', error); bankSelect.innerHTML = '<option>Error</option>';
+            } finally {
+                bankSelect.disabled = false; }
+        }
+        
+        loadBankList();
+        
+        function syncCommonInputs() {
+            if (addCategorySelect.value === 'Bank') {
+                commonIdInput.value = bankSelect.value; commonNameInput.value = bankNameInput.value;
+            } else {
+                commonIdInput.value = ewalletManualInput.value; commonNameInput.value = ewalletNameInput.value;
+            }
+        }
+
+        addCategorySelect.addEventListener('change', function() {
+            const isBank = this.value === 'Bank';
+            bankFields.classList.toggle('d-none', !isBank);
+            ewalletFields.classList.toggle('d-none', isBank);
+            bankSelect.required = isBank;
+            ewalletManualInput.required = !isBank;
+            syncCommonInputs();
+        });
+        
+        bankSelect.addEventListener('change', function() {
+            const selectedBank = bankList.find(bank => bank.bank_code === this.value);
+            bankNameInput.value = selectedBank ? selectedBank.bank_name : '';
+            syncCommonInputs();
+        });
+        
+        ewalletSelect.addEventListener('change', function() {
+            if (this.value) {
+                ewalletManualInput.value = this.value;
+                ewalletNameInput.value = this.options[this.selectedIndex].text;
+            }
+            syncCommonInputs();
+        });
+
+        ewalletManualInput.addEventListener('input', syncCommonInputs);
+        ewalletNameInput.addEventListener('input', syncCommonInputs);
+        syncCommonInputs();
+
+        let debounceTimer;
+        accountNumberInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                const number = accountNumberInput.value;
+                const category = addCategorySelect.value;
+                if (number.length < (category === 'Bank' ? 8 : 10)) { return; }
+
+                spinner.classList.remove('d-none');
+                accountNameInput.value = 'Mengecek...';
+
+                let url = '';
+                let payload = {};
+                let canCheck = true;
+                let ewalletType = ewalletSelect.value || ewalletManualInput.value;
+
+                if (category === 'Bank') {
+                    if (!bankSelect.value) {
+                        accountNameInput.value = 'Pilih bank terlebih dahulu'; canCheck = false;
+                    }
+                    url = '/member/payment/check-bank';
+                    payload = { number: number, code: bankSelect.value, _csrf: csrfToken };
+                } else {
+                    if (!['dana', 'ovo', 'gopay', 'shopeepay', 'linkaja'].includes(ewalletType)) {
+                        accountNameInput.value = ''; canCheck = false;
+                    }
+                    url = '/member/payment/check-ewallet';
+                    payload = { phoneNumber: number, ewalletType: ewalletType, _csrf: csrfToken };
+                }
+                
+                if (!canCheck) {
+                    spinner.classList.add('d-none'); return;
+                }
+                
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    if(data.success) {
+                        accountNameInput.value = data.name || (data.result ? data.result.name : 'Nama tidak ditemukan');
+                    } else {
+                        accountNameInput.value = data.message || 'Nama tidak ditemukan';
+                    }
+                } catch (error) {
+                    accountNameInput.value = 'Gagal memeriksa nama';
+                } finally {
+                    spinner.classList.add('d-none');
+                }
+            }, 800);
+        });
+    }
+
+    // --- QRIS Verification Logic ---
+    let qrisDebounceTimer;
+    async function verifyQrisUrl(urlInput, stringOutput, spinner, feedbackEl) {
+        clearTimeout(qrisDebounceTimer);
+        qrisDebounceTimer = setTimeout(async () => {
+            const qrisUrl = urlInput.value.trim();
+            stringOutput.value = '';
+            feedbackEl.textContent = '';
+            urlInput.classList.remove('is-valid', 'is-invalid');
+
+            if (!qrisUrl || !qrisUrl.startsWith('http')) {
+                return;
+            }
+
+            spinner.classList.remove('d-none');
+            feedbackEl.textContent = 'Memverifikasi URL...';
+
+            try {
+                const response = await fetch('/member/payment/verify-qris', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qrisUrl, _csrf: csrfToken })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    urlInput.classList.add('is-valid');
+                    urlInput.classList.remove('is-invalid');
+                    stringOutput.value = data.qrisString;
+                    feedbackEl.textContent = data.message;
+                    feedbackEl.className = 'form-text text-success';
+                } else {
+                    throw new Error(data.message || 'Verifikasi gagal');
+                }
+            } catch (error) {
+                urlInput.classList.add('is-invalid');
+                urlInput.classList.remove('is-valid');
+                stringOutput.value = '';
+                feedbackEl.textContent = error.message;
+                feedbackEl.className = 'form-text text-danger';
+            } finally {
+                spinner.classList.add('d-none');
+            }
+        }, 800);
+    }
+    
+    const addQrisUrlInput = document.getElementById('add-qrisUrl');
+    if (addQrisUrlInput) {
+        addQrisUrlInput.addEventListener('input', () => verifyQrisUrl(
+            addQrisUrlInput,
+            document.getElementById('add-qrisString'),
+            document.getElementById('add-qris-spinner'),
+            document.getElementById('add-qris-feedback')
+        ));
+    }
+
+    // --- View Mode Logic ---
+    const viewGridBtn = document.getElementById('view-grid-btn');
+    const viewListBtn = document.getElementById('view-list-btn');
+    const container = document.getElementById('payment-methods-container');
+
+    function applyView(view) {
+        localStorage.setItem('paymentView', view);
+        if (view === 'list') {
+            container.classList.add('view-list');
+            container.classList.remove('view-grid');
+            container.querySelectorAll('.payment-method-item').forEach(item => {
+                item.classList.remove('col-lg-4', 'col-md-6');
+                item.classList.add('col-12');
+            });
+            viewListBtn.classList.add('active');
+            viewGridBtn.classList.remove('active');
+        } else {
+            container.classList.add('view-grid');
+            container.classList.remove('view-list');
+            container.querySelectorAll('.payment-method-item').forEach(item => {
+                item.classList.add('col-lg-4', 'col-md-6');
+                item.classList.remove('col-12');
+            });
+            viewGridBtn.classList.add('active');
+            viewListBtn.classList.remove('active');
+        }
+    }
+
+    viewGridBtn.addEventListener('click', () => applyView('grid'));
+    viewListBtn.addEventListener('click', () => applyView('list'));
+    applyView(localStorage.getItem('paymentView') || 'grid');
+
+    // --- Edit Modal Logic ---
+    const editModal = document.getElementById('editMethodModal');
+    if (editModal) {
+        const editQrisUrlInput = document.getElementById('edit-qrisUrl');
+        editQrisUrlInput.addEventListener('input', () => verifyQrisUrl(
+            editQrisUrlInput,
+            document.getElementById('edit-qrisString'),
+            document.getElementById('edit-qris-spinner'),
+            document.getElementById('edit-qris-feedback')
+        ));
+
+        editModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const form = document.getElementById('editMethodForm');
+            const data = button.dataset;
+
+            form.action = `/member/payment/edit/${data.methodId}`;
+            
+            form.querySelector('#edit-id').value = data.id;
+            form.querySelector('#edit-name').value = data.name;
+            form.querySelector('#edit-category-hidden').value = data.category;
+            form.querySelector('#edit-iconUrl').value = data.iconUrl;
+            form.querySelector('#edit-minAmount').value = data.minAmount;
+            form.querySelector('#edit-maxAmount').value = data.maxAmount;
+            form.querySelector('#edit-fee').value = data.fee;
+            form.querySelector('#edit-feeType').value = data.feeType;
+            form.querySelector('#edit-notificationTemplates').value = data.notificationTemplates;
+
+            const bankEwalletFields = form.querySelector('#edit-bank-ewallet-fields');
+            const qrisFields = form.querySelector('#edit-qris-fields');
+            const qrisUrlInput = form.querySelector('#edit-qrisUrl');
+            const qrisStringInput = form.querySelector('#edit-qrisString');
+            const qrisFeedback = form.querySelector('#edit-qris-feedback');
+
+            // Reset QRIS fields before populating
+            qrisUrlInput.classList.remove('is-valid', 'is-invalid');
+            qrisFeedback.textContent = '';
+            
+            if (data.category === 'QRIS') {
+                bankEwalletFields.style.display = 'none';
+                qrisFields.style.display = 'block';
+                form.querySelector('#edit-qrisName').value = data.qrisName;
+                qrisStringInput.value = data.qrisString;
+                qrisUrlInput.value = data.qrisUrl;
+            } else {
+                bankEwalletFields.style.display = 'block';
+                qrisFields.style.display = 'none';
+                form.querySelector('#edit-accountNumber').value = data.accountNumber;
+                form.querySelector('#edit-accountName').value = data.accountName;
+            }
+        });
+    }
+
+    // --- View QRIS Modal Logic ---
+    const viewQrisModal = document.getElementById('viewQrisModal');
+    if (viewQrisModal) {
+        viewQrisModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const qrisUrl = button.getAttribute('data-qris-url');
+            const qrisName = button.getAttribute('data-qris-name');
+            
+            const qrisImage = viewQrisModal.querySelector('#qris-image-preview');
+            const qrisNameEl = viewQrisModal.querySelector('#qris-name-preview');
+
+            qrisImage.src = qrisUrl || 'https://upload.wikimedia.org/wikipedia/commons/e/e1/QRIS_logo.svg';
+            qrisNameEl.textContent = qrisName;
+        });
+    }
+});
+</script>

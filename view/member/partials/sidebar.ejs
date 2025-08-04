@@ -1,0 +1,78 @@
+<div class="offcanvas-lg offcanvas-start" tabindex="-1" id="sidebar" style="width: 260px; background-color: var(--card-bg); border-right: 1px solid var(--bs-border-color);">
+    <div class="offcanvas-header border-bottom" style="border-color: var(--bs-border-color) !important;">
+        <a href="/member/payment" class="d-flex align-items-center text-decoration-none" style="color: var(--bs-body-color);">
+            <img src="<%= webData.iconUrl %>" alt="icon" width="28" height="28" class="me-2 rounded-circle">
+            <span class="fs-5 fw-bold"><%= webData.name %></span>
+        </a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column p-3">
+        <ul class="nav nav-pills flex-column mb-auto">
+            <% if (user.isAdmin) { %>
+                <li class="nav-item mb-1">
+                    <small class="nav-link text-muted" style="font-size: 0.8rem;">ADMIN AREA</small>
+                </li>
+                <% const adminMenuItems = [
+                    { href: '/admin/member', page: 'admin-member', icon: 'bi-people-fill', text: 'Manajemen Member' },
+                    { href: '/admin/transaction', page: 'admin-transaction', icon: 'bi-bar-chart-line-fill', text: 'Transaksi Realtime' },
+                    { href: '/admin/setting', page: 'admin-setting', icon: 'bi-gear-wide-connected', text: 'Pengaturan Web' }
+                ]; %>
+                <% for(let item of adminMenuItems) { %>
+                <li class="nav-item mb-1">
+                    <a href="<%= item.href %>" class="nav-link d-flex align-items-center py-2 <%= page === item.page ? 'active' : '' %>">
+                        <i class="bi <%= item.icon %> me-3 fs-5" style="width: 20px;"></i>
+                        <%= item.text %>
+                    </a>
+                </li>
+                <% } %>
+                <hr>
+            <% } %>
+            <% const menuItems = [
+                { href: '/member/payment', page: 'payment', icon: 'bi-credit-card-2-front-fill', text: 'Pembayaran' },
+                { href: '/member/transaction', page: 'transaction', icon: 'bi-table', text: 'Transaksi' },
+                { href: '/member/testing', page: 'testing', icon: 'bi-cone-striped', text: 'Pengujian' },
+                { href: '/member/log-request', page: 'log-request', icon: 'bi-body-text', text: 'Log Request' },
+                { href: '/member/integration', page: 'integration', icon: 'bi-plug-fill', text: 'Integrasi' },
+                { href: '/member/tutorial', page: 'tutorial', icon: 'bi-book-half', text: 'Tutorial' },
+                { href: '/member/documentation', page: 'documentation', icon: 'bi-file-code-fill', text: 'Dokumentasi API' }
+            ]; %>
+            <% for(let item of menuItems) { %>
+            <li class="nav-item mb-1">
+                <a href="<%= item.href %>" class="nav-link d-flex align-items-center py-2 <%= page === item.page ? 'active' : '' %>">
+                    <i class="bi <%= item.icon %> me-3 fs-5" style="width: 20px;"></i>
+                    <%= item.text %>
+                </a>
+            </li>
+            <% } %>
+        </ul>
+
+        <div class="dropdown mb-3">
+             <button class="btn w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-sun-fill me-2 theme-icon-active" data-theme-icon-active="bi-sun-fill"></i>
+                <span>Tema</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end w-100">
+                <li><button class="dropdown-item d-flex align-items-center" type="button" data-bs-theme-value="light"><i class="bi bi-sun-fill me-2"></i> Terang</button></li>
+                <li><button class="dropdown-item d-flex align-items-center" type="button" data-bs-theme-value="dark"><i class="bi bi-moon-stars-fill me-2"></i> Gelap</button></li>
+                <li><button class="dropdown-item d-flex align-items-center" type="button" data-bs-theme-value="auto"><i class="bi bi-circle-half me-2"></i> Sistem</button></li>
+            </ul>
+        </div>
+        
+        <hr class="mt-0">
+
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--bs-body-color);">
+                <img src="https://avatars.githubusercontent.com/u/99401498?v=4" alt="" width="32" height="32" class="rounded-circle me-2">
+                <div class="d-flex flex-column" style="line-height: 1.2;">
+                    <strong class="small"><%= user.username %></strong>
+                    <small class="text-muted">Informasi</small>
+                </div>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                <li><a class="dropdown-item" href="/member/profile"><i class="bi bi-person-circle me-2"></i>Profil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/auth/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

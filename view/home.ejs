@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id" class="dark" style="color-scheme: dark;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WBK PayGateway - Solusi Payment Gateway Modern</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+        }
+
+        html.dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --primary: 210 40% 98%;
+            --primary-foreground: 222.2 47.4% 11.2%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 212.7 26.8% 83.9%;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        .bg-grid {
+            background-image: linear-gradient(to right, rgba(128, 128, 128, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(128, 128, 128, 0.08) 1px, transparent 1px);
+            background-size: 1.5rem 1.5rem;
+        }
+        .text-primary { color: hsl(var(--primary)); }
+        .bg-primary { background-color: hsl(var(--primary)); }
+        .text-primary-foreground { color: hsl(var(--primary-foreground)); }
+        .bg-secondary { background-color: hsl(var(--secondary)); }
+        .text-secondary-foreground { color: hsl(var(--secondary-foreground)); }
+        .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+        .bg-card { background-color: hsl(var(--card)); }
+        .border-border { border-color: hsl(var(--border)); }
+        .bg-primary-soft { background-color: hsla(210, 40%, 98%, 0.1); }
+        .group:hover .group-hover\\:bg-primary { background-color: hsl(var(--primary)); }
+        .group:hover .group-hover\\:text-primary-foreground { color: hsl(var(--primary-foreground)); }
+        .header-scrolled {
+            background-color: hsl(var(--background) / 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid hsl(var(--border));
+        }
+        @keyframes check-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .check-icon-animated {
+            animation: check-pulse 2s infinite ease-in-out;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+        .accordion-header .bx-chevron-down {
+            transition: transform 0.3s ease-in-out;
+        }
+        .accordion-item.open .accordion-header .bx-chevron-down {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+    <div class="min-h-screen">
+        <header id="header" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+            <div class="container relative mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-4">
+                    <a class="flex items-center space-x-2" href="/">
+                        <img src="https://avatars.githubusercontent.com/u/99401498?v=4" alt="Logo WBK PayGateway" class="h-8 w-8 rounded-lg">
+                        <div class="text-xl font-bold">
+                            <span class="text-primary">WBK PayGateway</span>
+                        </div>
+                    </a>
+                </div>
+                <nav class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block" aria-label="Primary Navigation">
+                    <ul class="flex items-center gap-2 rounded-full border border-border bg-card p-1">
+                        <li><a href="#home" class="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">Home</a></li>
+                        <li><a href="#about" class="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">About</a></li>
+                        <li><a href="#faq" class="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">FAQs</a></li>
+                        <li><a href="#get-started" class="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">Get Started</a></li>
+                    </ul>
+                </nav>
+                <div class="flex items-center gap-2">
+                    <button id="theme-toggle-btn" class="inline-flex items-center justify-center h-9 w-9 rounded-md transition-colors hover:bg-secondary">
+                        <i class='bx bxs-sun block dark:hidden'></i>
+                        <i class='bx bxs-moon hidden dark:block'></i>
+                        <span class="sr-only">Toggle theme</span>
+                    </button>
+                    <div class="hidden md:flex">
+                        <a href="/auth/login">
+                            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">
+                                Mulai
+                                <i class='bx bx-right-arrow-alt ml-2 text-xl'></i>
+                            </button>
+                        </a>
+                    </div>
+                    <div class="flex items-center md:hidden">
+                        <button id="mobile-menu-btn" class="inline-flex items-center justify-center h-9 w-9 rounded-md transition-colors hover:bg-secondary" aria-label="menu-button">
+                            <i class='bx bx-menu text-2xl'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="mobile-sidebar" class="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+            <div class="p-4">
+                <a class="flex items-center space-x-2 mb-8" href="/">
+                    <img src="https://avatars.githubusercontent.com/u/99401498?v=4" alt="Logo WBK PayGateway" class="h-8 w-8 rounded-lg">
+                    <div class="text-xl font-bold"><span class="text-primary">WBK PayGateway</span></div>
+                </a>
+                <nav>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="block rounded-md px-4 py-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">Home</a></li>
+                        <li><a href="#about" class="block rounded-md px-4 py-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">About</a></li>
+                        <li><a href="#faq" class="block rounded-md px-4 py-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">FAQs</a></li>
+                        <li><a href="#get-started" class="block rounded-md px-4 py-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-secondary-foreground">Get Started</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+
+        <main class="bg-grid flex flex-col">
+            <section id="home" class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-12 xl:px-24">
+                <div class="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
+                    <div class="absolute left-0 right-0 top-0 -z-10 m-auto h-[260px] w-[260px] rounded-full bg-primary/20 blur-[100px] sm:h-[310px] sm:w-[310px]"></div>
+                </div>
+                <div class="w-full max-w-screen-2xl text-center">
+                    <div class="items-center border font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 mb-4 inline-block rounded-full px-4 py-1.5 text-xs sm:text-sm">
+                        🚀 Solusi Payment Gateway Modern
+                    </div>
+                    <h1 class="mb-6 text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl md:text-6xl lg:text-7xl">
+                        Otomatisasi Pembayaran, <br class="hidden md:inline-block">
+                        <span class="bg-gradient-to-r from-primary to-purple-500 bg-clip-text">Notifikasi Instan</span>
+                    </h1>
+                    <p class="mx-auto mb-10 w-full max-w-screen-2xl leading-snug text-muted-foreground sm:text-xl md:text-2xl">
+                        Terima pembayaran QRIS & E-Wallet dengan mudah dan dapatkan notifikasi real-time ke perangkat Anda. Fokus pada bisnis, biar kami urus transaksinya.
+                    </p>
+                    <div class="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                        <a class="w-full sm:w-auto" href="/auth/signup">
+                            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 w-full px-6 py-4 text-sm sm:w-auto sm:px-8 sm:py-6 sm:text-lg">
+                                Mulai Gratis Sekarang
+                                <i class='bx bx-right-arrow-alt ml-2 text-xl'></i>
+                            </button>
+                        </a>
+                        <a class="w-full sm:w-auto" href="/auth/login">
+                            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 w-full px-6 py-4 text-sm sm:w-auto sm:px-8 sm:py-6 sm:text-lg">
+                                Login
+                            </button>
+                        </a>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs text-muted-foreground sm:text-sm">
+                        <div data-aos="fade-up" data-aos-delay="200" class="flex items-center gap-2"><i class='bx bxs-check-circle text-green-500 check-icon-animated'></i>Notifikasi Real-time</div>
+                        <div data-aos="fade-up" data-aos-delay="300" class="flex items-center gap-2"><i class='bx bxs-check-circle text-green-500 check-icon-animated'></i>Setup Cepat</div>
+                        <div data-aos="fade-up" data-aos-delay="400" class="flex items-center gap-2"><i class='bx bxs-check-circle text-green-500 check-icon-animated'></i>API Publik</div>
+                        <div data-aos="fade-up" data-aos-delay="500" class="flex items-center gap-2"><i class='bx bxs-check-circle text-green-500 check-icon-animated'></i>Dukungan 24/7</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="w-full bg-background py-24 sm:py-32" id="about" data-aos="fade-up">
+                <div class="container mx-auto px-4">
+                    <div class="mx-auto mb-16 max-w-3xl text-center">
+                        <h2 class="mb-4 text-4xl font-bold tracking-tight md:text-5xl">Mengapa Memilih WBK PayGateway?</h2>
+                        <p class="text-lg text-muted-foreground md:text-xl">Dibangun untuk kemudahan Anda. Kami mengerti apa yang Anda butuhkan untuk mengembangkan bisnis.</p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="group rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:border-primary hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="100">
+                            <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft transition-colors duration-300 group-hover:bg-primary">
+                                <i class='bx bxs-zap text-4xl text-primary transition-colors duration-300 group-hover:text-primary-foreground'></i>
+                            </div>
+                            <h3 class="mb-2 text-xl font-semibold">Sangat Cepat</h3>
+                            <p class="text-muted-foreground">Notifikasi instan dengan latensi minimal untuk aplikasi real-time.</p>
+                        </div>
+                        <div class="group rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:border-primary hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="200">
+                            <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft transition-colors duration-300 group-hover:bg-primary">
+                                <i class='bx bxs-shield text-4xl text-primary transition-colors duration-300 group-hover:text-primary-foreground'></i>
+                            </div>
+                            <h3 class="mb-2 text-xl font-semibold">Andal & Aman</h3>
+                            <p class="text-muted-foreground">Keamanan tingkat tinggi dengan jaminan uptime 99.9%.</p>
+                        </div>
+                        <div class="group rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:border-primary hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="300">
+                            <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft transition-colors duration-300 group-hover:bg-primary">
+                                <i class='bx bx-code-alt text-4xl text-primary transition-colors duration-300 group-hover:text-primary-foreground'></i>
+                            </div>
+                            <h3 class="mb-2 text-xl font-semibold">Ramah Developer</h3>
+                            <p class="text-muted-foreground">RESTful API dengan dokumentasi lengkap dan mudah dipahami.</p>
+                        </div>
+                        <div class="group rounded-xl border border-border bg-card p-6 text-center transition-all duration-300 hover:border-primary hover:shadow-lg hover:-translate-y-1" data-aos="fade-up" data-aos-delay="400">
+                            <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft transition-colors duration-300 group-hover:bg-primary">
+                                <i class='bx bx-time-five text-4xl text-primary transition-colors duration-300 group-hover:text-primary-foreground'></i>
+                            </div>
+                            <h3 class="mb-2 text-xl font-semibold">Dukungan 24/7</h3>
+                            <p class="text-muted-foreground">Bantuan sepanjang waktu untuk semua kebutuhan integrasi Anda.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="w-full bg-background py-24 sm:py-32" id="faq" data-aos="fade-up">
+                <div class="container mx-auto px-4">
+                    <div class="mx-auto mb-16 max-w-3xl text-center">
+                        <div class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                            <i class='bx bx-help-circle text-4xl text-primary'></i>
+                        </div>
+                        <h2 class="mb-4 text-4xl font-bold tracking-tight md:text-5xl">Pertanyaan Umum</h2>
+                        <p class="text-lg text-muted-foreground md:text-xl">Punya pertanyaan? Kami punya jawabannya.</p>
+                    </div>
+                    <div class="mx-auto max-w-3xl space-y-4">
+                        <div class="accordion-item rounded-lg border border-border bg-card">
+                            <button class="accordion-header flex w-full items-center justify-between p-6 text-left text-lg font-medium">
+                                <span>Bagaimana cara kerjanya?</span>
+                                <i class='bx bx-chevron-down text-2xl'></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-6 text-muted-foreground">
+                                <p>Sistem kami bekerja dengan menangkap notifikasi pembayaran yang masuk ke ponsel Android Anda melalui aplikasi MacroDroid, lalu meneruskannya ke server kami untuk memvalidasi dan mengubah status transaksi secara otomatis.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item rounded-lg border border-border bg-card">
+                            <button class="accordion-header flex w-full items-center justify-between p-6 text-left text-lg font-medium">
+                                <span>Apakah ini gratis?</span>
+                                <i class='bx bx-chevron-down text-2xl'></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-6 text-muted-foreground">
+                                <p>Ya, kami menyediakan layanan dasar secara gratis. Untuk kebutuhan bisnis yang lebih besar, kami akan menyediakan paket berbayar dengan fitur tambahan di masa mendatang.</p>
+                            </div>
+                        </div>
+                        <div class="accordion-item rounded-lg border border-border bg-card">
+                            <button class="accordion-header flex w-full items-center justify-between p-6 text-left text-lg font-medium">
+                                <span>Pembayaran apa saja yang didukung?</span>
+                                <i class='bx bx-chevron-down text-2xl'></i>
+                            </button>
+                            <div class="accordion-content px-6 pb-6 text-muted-foreground">
+                                <p>Saat ini kami mendukung semua pembayaran yang masuk melalui QRIS (seperti DANA Bisnis, GoPay Merchant) dan transfer E-Wallet personal (DANA, OVO, GoPay, ShopeePay).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-20 sm:py-24" id="get-started" data-aos="fade-up">
+                <div class="container mx-auto overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-16 text-center text-primary-foreground shadow-2xl shadow-indigo-500/30">
+                    <h2 class="mb-4 text-4xl font-bold tracking-tight md:text-5xl">Siap Mengembangkan Bisnis Anda?</h2>
+                    <p class="mx-auto mb-8 max-w-3xl text-lg opacity-90 md:text-xl">Buat akun sekarang juga dan nikmati kemudahan menerima pembayaran digital. Hanya butuh beberapa menit untuk memulai.</p>
+                    <div class="flex flex-col justify-center gap-4 sm:flex-row">
+                        <a href="/auth/signup">
+                            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-transform duration-300 hover:scale-105 rounded-md bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-10 px-8 py-6 text-lg">
+                                Coba Sekarang, Gratis!
+                                <i class='bx bx-right-arrow-alt ml-2 text-xl'></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="bg-grid py-16 text-foreground">
+            <div class="container mx-auto px-4">
+                <div class="mt-12 border-t border-border pt-8 text-center text-muted-foreground">
+                    <p>© <%= new Date().getFullYear() %> WBK PayGateway. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // AOS Initialization
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 10) {
+                    header.classList.add('header-scrolled');
+                } else {
+                    header.classList.remove('header-scrolled');
+                }
+            });
+
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const htmlEl = document.documentElement;
+            
+            function applyTheme() {
+                if (localStorage.getItem('theme') === 'light') {
+                    htmlEl.classList.remove('dark');
+                } else {
+                    htmlEl.classList.add('dark');
+                }
+            }
+            
+            applyTheme();
+
+            themeToggleBtn.addEventListener('click', () => {
+                if (htmlEl.classList.contains('dark')) {
+                    htmlEl.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    htmlEl.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+            
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileSidebar = document.getElementById('mobile-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            
+            function toggleMenu() {
+                mobileSidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            }
+
+            mobileMenuBtn.addEventListener('click', toggleMenu);
+            sidebarOverlay.addEventListener('click', toggleMenu);
+
+            mobileSidebar.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', toggleMenu);
+            });
+            
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                header.addEventListener('click', () => {
+                    const isOpen = item.classList.contains('open');
+                    accordionItems.forEach(otherItem => {
+                        otherItem.classList.remove('open');
+                        otherItem.querySelector('.accordion-content').style.maxHeight = null;
+                    });
+                    if (!isOpen) {
+                        item.classList.add('open');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
