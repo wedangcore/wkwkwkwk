@@ -1,73 +1,45 @@
 {
-  "name": "rest-api-alpis",
-  "version": "2.0.0",
-  "description": "make by alip free rest api",
-  "main": "index.js",
-  "engines": {
-    "node": "^18.x"
-  },
-  "name": "WBK",
+  "name": "wbk-paygateway-nextjs",
   "version": "1.0.0",
-  "description": "rest api",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "node": "nodemon server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AlipBot/Api-Alpis.git"
-  },
-  "keywords": [
-    "restapi",
-    "bot",
-    "whatsaap"
-  ],
-  "author": "AlipBot",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/AlipBot/Api-Alpis/issues"
-  },
-  "homepage": "https://github.com/AlipBot/Api-Alpis#readme",
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "buffer": "^6.0.3",
     "contains-emoji": "^1.1.4",
     "cookie-parser": "^1.4.6",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
-    "cheerio": "^1.1.0",
-    "crypto-js": "^4.2.0",
     "csurf": "^1.11.0",
-    "dotenv": "^16.3.1",
-    "ejs": "^3.1.8",
-    "express": "^4.18.1",
+    "dotenv": "^16.4.5",
     "express-recaptcha": "^5.1.0",
-    "express-session": "^1.17.3",
-    "express-rate-limit": "^7.5.1",
+    "express-session": "^1.18.0",
     "form-data": "^4.0.0",
-    "generate-api-key": "^1.0.2",
     "is-gmail": "^1.0.0",
     "jimp": "^0.22.12",
     "jsqr": "^1.4.0",
-    "mongoose": "^6.8.0",
+    "mongoose": "^8.3.2",
     "memorystore": "^1.6.7",
-    "node-cron": "^3.0.2",
-    "nodemailer": "^6.8.0",
-    "passport": "^0.6.0",
+    "next": "^14.2.3",
+    "nodemailer": "^6.9.13",
+    "on-finished": "^2.4.1",
+    "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "password-validator": "^5.3.0",
-    "serve-favicon": "^2.5.0",
-    "ssl-express-www": "^3.0.8",
-    "qrcode": "^1.5.3",
-    "qrcode-reader": "^1.0.4",
-    "qrcode-reader": "^1.0.4",
-    "qs": "^6.14.0",
-    "url": "^0.11.4",
-    "on-finished": "2.4.1"
+    "qs": "^6.12.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.3",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3"
   }
 }
